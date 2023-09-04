@@ -8,6 +8,8 @@ namespace Tuna_Piano.Models
         [Required]
         public string Title { get; set; }
         public int ArtistId { get; set; }
+        public Artist Artists { get; set; }
+        public SongGenre SonGen { get; set; }
         public string Album { get; set;}
         public int length { get; set; }
     }

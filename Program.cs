@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Tuna_Piano.Models;
 using Tuna_Piano;
 
@@ -59,9 +61,18 @@ app.MapControllers();
 
 //APIEndpoints
 
-app.MapGet("/songs/all", (Tuna_PianoDbContext db) =>
+app.MapGet("/songs", (Tuna_PianoDbContext db) =>
 {
     return db.Songs.ToList();
+});
+
+app.MapGet("/songs/{SongId}", (Tuna_PianoDbContext db, int SongId) =>
+{
+    return db.Songs.Where(s => s.Id == SongId)
+                    .Include(s => s.Artists)
+                    .Include(g => g.SonGen)
+                    .ThenInclude(g => g.Genres)
+                    .ToList();
 });
 
 app.MapPost("/songs/new", (Tuna_PianoDbContext db, Song AddSong) =>
@@ -73,7 +84,7 @@ app.MapPost("/songs/new", (Tuna_PianoDbContext db, Song AddSong) =>
     return Results.Created($"/songs/new", AddSong);
 });
 
-app.MapPut("/songs/update/{SongId}", (Tuna_PianoDbContext db, int SongId, Song song) =>
+app.MapPut("/songs/{SongId}", (Tuna_PianoDbContext db, int SongId, Song song) =>
 {
     //Selecting the song to update
     Song SelectedSong = db.Songs.FirstOrDefault(s => s.Id == SongId);
@@ -90,7 +101,7 @@ app.MapPut("/songs/update/{SongId}", (Tuna_PianoDbContext db, int SongId, Song s
     return Results.NoContent();
 });
 
-app.MapDelete("/songs/delete/{Id}", (Tuna_PianoDbContext db, int Id ) =>
+app.MapDelete("/songs/{Id}", (Tuna_PianoDbContext db, int Id ) =>
 {
     Song SelectedSong = db.Songs.FirstOrDefault(s => s.Id == Id);
     if (SelectedSong == null)
@@ -99,7 +110,9 @@ app.MapDelete("/songs/delete/{Id}", (Tuna_PianoDbContext db, int Id ) =>
     }
     db.Songs.Remove(SelectedSong);
     db.SaveChanges();
-    return Results.Ok();
+    return Results.NoContent();
 });
+
+
 
 app.Run();
