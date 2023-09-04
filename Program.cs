@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Json;
 using Tuna_Piano.Models;
+using Tuna_Piano;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
