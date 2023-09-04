@@ -59,4 +59,47 @@ app.MapControllers();
 
 //APIEndpoints
 
+app.MapGet("/songs/all", (Tuna_PianoDbContext db) =>
+{
+    return db.Songs.ToList();
+});
+
+app.MapPost("/songs/new", (Tuna_PianoDbContext db, Song AddSong) =>
+{
+    Song NewSong = AddSong;
+    db.Songs.Add(NewSong);
+    db.SaveChanges();
+
+    return Results.Created($"/songs/new", AddSong);
+});
+
+app.MapPut("/songs/update/{SongId}", (Tuna_PianoDbContext db, int SongId, Song song) =>
+{
+    //Selecting the song to update
+    Song SelectedSong = db.Songs.FirstOrDefault(s => s.Id == SongId);
+    if (SelectedSong == null)
+    {
+        Results.NotFound("Sorry. Song does not exist!");
+    }
+    //Updating the song the user selected
+    SelectedSong.Title = song.Title;
+    SelectedSong.ArtistId = song.ArtistId;
+    SelectedSong.Album = song.Album;
+    SelectedSong.length = song.length;
+    db.SaveChanges();
+    return Results.NoContent();
+});
+
+app.MapDelete("/songs/delete/{Id}", (Tuna_PianoDbContext db, int Id ) =>
+{
+    Song SelectedSong = db.Songs.FirstOrDefault(s => s.Id == Id);
+    if (SelectedSong == null)
+    {
+        return Results.NotFound();
+    }
+    db.Songs.Remove(SelectedSong);
+    db.SaveChanges();
+    return Results.Ok();
+});
+
 app.Run();
