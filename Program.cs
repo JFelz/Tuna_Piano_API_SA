@@ -113,6 +113,83 @@ app.MapDelete("/songs/{Id}", (Tuna_PianoDbContext db, int Id ) =>
     return Results.NoContent();
 });
 
+//Artists
+app.MapGet("/artists", (Tuna_PianoDbContext db) =>
+{
+    return db.Artists.ToList();
+});
+
+app.MapPost("/artists/new", (Tuna_PianoDbContext db, Artist NewArtist) =>
+{
+    Artist AddedArtist = NewArtist;
+    db.Artists.Add(AddedArtist);
+    db.SaveChanges();
+    return Results.Ok();
+});
+
+app.MapPut("artists/{Id}", (Tuna_PianoDbContext db, int Id, Artist editArtist) =>
+{
+    Artist SelectedArtist = db.Artists.FirstOrDefault(a => a.Id == Id);
+    if (SelectedArtist == null)
+    {
+        return Results.NotFound("Sorry, the artist does not exist");
+    }
+
+    SelectedArtist.Name = editArtist.Name;
+    SelectedArtist.Age = editArtist.Age;
+    SelectedArtist.Bio = editArtist.Bio;
+    db.SaveChanges();
+    return Results.NoContent();
+
+});
+
+app.MapDelete("/artists/{Id}", (Tuna_PianoDbContext db, int Id) =>
+{
+    Artist DeletedArtist = db.Artists.FirstOrDefault(d => d.Id == Id);
+    if (DeletedArtist == null)
+    {
+        return Results.NotFound();
+    }
+    db.Artists.Remove(DeletedArtist);
+    db.SaveChanges();
+    return Results.Ok();
+});
+
+// Return to this one
+// Get Artists with their respective songs
+app.MapGet("/artists/{Id}", (Tuna_PianoDbContext db, int Id) =>
+{
+    return db.Artists.Where(a => a.Id == Id);
+                     //.Include(s => s.ArtSon)
+                     //.ThenInclude(s => s.Songs)
+                     //.ToList();
+});
+
+//Genres
+app.MapGet("/genres", (Tuna_PianoDbContext db) =>
+{
+    return db.Genres.ToList();
+});
+
+app.MapPost("", () =>
+{
+
+});
+
+app.MapPut("", () =>
+{
+
+});
+
+app.MapDelete("", () =>
+{
+
+});
+
+app.MapGet("", () =>
+{
+
+});
 
 
 app.Run();
