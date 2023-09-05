@@ -71,17 +71,35 @@ app.MapGet("/songs/{SongId}", (Tuna_PianoDbContext db, int SongId) =>
     return db.Songs.Where(s => s.Id == SongId)
                     .Include(s => s.Artists)
                     .Include(g => g.SonGen)
-                    .ThenInclude(g => g.Genres)
+                    .ThenInclude(g => g.CurrentGenre)
                     .ToList();
 });
 
-app.MapPost("/songs/new", (Tuna_PianoDbContext db, Song AddSong) =>
+app.MapPost("/songs/new", (Tuna_PianoDbContext db, Song AddSong, int SelectGenreId) =>
 {
+    //Add Song to Variable
     Song NewSong = AddSong;
+    //Add Song to Songs Tables
     db.Songs.Add(NewSong);
     db.SaveChanges();
 
-    return Results.Created($"/songs/new", AddSong);
+    /*Retrieve Song Title by grabbing the most recent in the database array.
+    If it was with multiple users, you would grab the most recent by UID*/
+    //int LatestSong = db.Songs.Max(s => s.Id);
+
+    SongGenre NewSongGenre = new SongGenre()
+    {
+        SongId = NewSong.Id,
+        GenreId = SelectGenreId
+    };
+
+    db.SongsGenres.Add(NewSongGenre);
+    db.SaveChanges();
+
+    return Results.Ok();
+
+    //Choose Genre the song goes to
+    //Combine SongId & GenreId and add to SongGenre table
 });
 
 app.MapPut("/songs/{SongId}", (Tuna_PianoDbContext db, int SongId, Song song) =>
@@ -159,10 +177,9 @@ app.MapDelete("/artists/{Id}", (Tuna_PianoDbContext db, int Id) =>
 // Get Artists with their respective songs
 app.MapGet("/artists/{Id}", (Tuna_PianoDbContext db, int Id) =>
 {
-    return db.Artists.Where(a => a.Id == Id);
-                     //.Include(s => s.ArtSon)
-                     //.ThenInclude(s => s.Songs)
-                     //.ToList();
+    return db.Artists.Where(a => a.Id == Id)
+                       .Include(s => s.Songs)
+                       .ToList();
 });
 
 //Genres
@@ -202,9 +219,12 @@ app.MapDelete("genres/{Id}", (Tuna_PianoDbContext db, int Id) =>
     return Results.Ok();
 });
 
-app.MapGet("", () =>
+app.MapGet("/genres/{gId}", (Tuna_PianoDbContext db, int gId) =>
 {
-
+    return db.Genres.Where(g => g.Id == gId)
+                    .Include(g => g.SonGen)
+                    .ThenInclude(s => s.CurrentSong)
+                    .ToList();
 });
 
 

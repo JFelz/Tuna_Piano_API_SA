@@ -7,7 +7,8 @@ namespace Tuna_Piano.Models
         public int Id { get; set; }
         [Required]
         public int SongId { get; set; }
+        public Song CurrentSong { get; set; }
         public int GenreId { get; set; }
-        public Genre Genres { get; set; }
+        public Genre CurrentGenre { get; set; }
     }
 }
