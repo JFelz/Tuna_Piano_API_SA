@@ -10,5 +10,6 @@ namespace Tuna_Piano.Models
 
         public int Age { get; set; }
         public string Bio { get; set; }
+        public List<Song> Songs { get; set; }
     }
 }
