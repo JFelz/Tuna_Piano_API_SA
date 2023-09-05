@@ -158,6 +158,8 @@ namespace Tuna_Piano.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ArtistId");
+
                     b.ToTable("Songs");
 
                     b.HasData(
@@ -227,6 +229,11 @@ namespace Tuna_Piano.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GenreId");
+
+                    b.HasIndex("SongId")
+                        .IsUnique();
+
                     b.ToTable("SongsGenres");
 
                     b.HasData(
@@ -266,6 +273,81 @@ namespace Tuna_Piano.Migrations
                             GenreId = 7,
                             SongId = 6
                         });
+                });
+
+            modelBuilder.Entity("Tuna_Piano.Models.UserProfile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("UID")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("displayName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserProfile");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            UID = "YOfJwqkulPUXzojJjdnCFXwrQkw2",
+                            displayName = "Jovanni Feliz"
+                        });
+                });
+
+            modelBuilder.Entity("Tuna_Piano.Models.Song", b =>
+                {
+                    b.HasOne("Tuna_Piano.Models.Artist", "Artists")
+                        .WithMany("Songs")
+                        .HasForeignKey("ArtistId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Artists");
+                });
+
+            modelBuilder.Entity("Tuna_Piano.Models.SongGenre", b =>
+                {
+                    b.HasOne("Tuna_Piano.Models.Genre", "CurrentGenre")
+                        .WithMany("SonGen")
+                        .HasForeignKey("GenreId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Tuna_Piano.Models.Song", "CurrentSong")
+                        .WithOne("SonGen")
+                        .HasForeignKey("Tuna_Piano.Models.SongGenre", "SongId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CurrentGenre");
+
+                    b.Navigation("CurrentSong");
+                });
+
+            modelBuilder.Entity("Tuna_Piano.Models.Artist", b =>
+                {
+                    b.Navigation("Songs");
+                });
+
+            modelBuilder.Entity("Tuna_Piano.Models.Genre", b =>
+                {
+                    b.Navigation("SonGen");
+                });
+
+            modelBuilder.Entity("Tuna_Piano.Models.Song", b =>
+                {
+                    b.Navigation("SonGen")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -227,7 +227,24 @@ app.MapGet("/genres/{gId}", (Tuna_PianoDbContext db, int gId) =>
                     .ToList();
 });
 
+//Update SongGenre for a Song
+app.MapPut("/genre/song/{SongId}", (Tuna_PianoDbContext db, int SongId, SongGenre UpdatedSongGenre) =>
+{
 
+   SongGenre SelectedSong = db.SongsGenres.FirstOrDefault(s => s.SongId == SongId);
 
+    SelectedSong.GenreId = UpdatedSongGenre.GenreId;
+    db.SaveChanges();
+    return Results.Ok();
+    
+});
+
+app.MapDelete("/SongGenre/Delete/{Id}", (Tuna_PianoDbContext db, int Id) =>
+{
+    SongGenre DeleteSongGenre = db.SongsGenres.FirstOrDefault(sg => sg.Id == Id);
+    db.SongsGenres.Remove(DeleteSongGenre);
+    db.SaveChanges();
+    return Results.Ok();
+});
 
 app.Run();
