@@ -171,19 +171,35 @@ app.MapGet("/genres", (Tuna_PianoDbContext db) =>
     return db.Genres.ToList();
 });
 
-app.MapPost("", () =>
+app.MapPost("/genres/new", (Tuna_PianoDbContext db, Genre NewGenre) =>
 {
-
+    db.Genres.Add(NewGenre);
+    db.SaveChanges();
+    return Results.Ok();
 });
 
-app.MapPut("", () =>
+app.MapPut("genres/{Id}", (Tuna_PianoDbContext db, int Id, Genre UpdatedGenre) =>
 {
-
+    Genre SelectedGenre = db.Genres.FirstOrDefault(g => g.Id == Id);
+    if (SelectedGenre == null)
+    {
+        return Results.NotFound();
+    }
+    SelectedGenre.Description = UpdatedGenre.Description;
+    db.SaveChanges();
+    return Results.NoContent();
 });
 
-app.MapDelete("", () =>
+app.MapDelete("genres/{Id}", (Tuna_PianoDbContext db, int Id) =>
 {
-
+    Genre deletedGenre = db.Genres.FirstOrDefault(g => g.Id == Id);
+    if (deletedGenre == null)
+    {
+        return Results.NotFound();
+    }
+    db.Genres.Remove(deletedGenre);
+    db.SaveChanges();
+    return Results.Ok();
 });
 
 app.MapGet("", () =>
