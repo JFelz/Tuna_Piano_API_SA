@@ -51,8 +51,12 @@ namespace Tuna_Piano
                 new SongGenre { Id = 4, SongId = 4, GenreId = 8 },
                 new SongGenre { Id = 5, SongId = 5, GenreId = 8 },
                 new SongGenre { Id = 6, SongId = 6, GenreId = 7 },
-
             });
+            modelBuilder.Entity<UserProfile>().HasData(new UserProfile[]
+            {
+                new UserProfile{Id = 1, UID = "YOfJwqkulPUXzojJjdnCFXwrQkw2", displayName = "Jovanni Feliz"}
+            });
+
         }
     }
 }
